@@ -1,0 +1,106 @@
+{
+    "name": "daskeyboard-applet--weather-alerts",
+    "displayName": "Weather Alerts",
+    "version": "0.1a",
+    "description": "US Weather Alerts from NWS",
+    "longDescription": "Provides severe weather alerts from NWS",
+    "officialProductName": "Weather Alerts",
+    "appUrl": "",
+    "isSingleton": false,
+    "videoUrl": "",
+    "icon": "assets/icon.png",
+    "image": "assets/image_keys.png",
+    "publisher": "dpm343",
+    "authorName": "dpm343",
+    "authorUrl": "https://twitter.com/daskeyboard",
+    "issuesUrl": "https://github.com/daskeyboard/daskeyboard-applet--key-status/issues",
+    "homePageUrl": "https://github.com/daskeyboard/daskeyboard-applet--key-status",
+    "developerRepoUrl": "https://github.com/daskeyboard/daskeyboard-applet--key-status",
+    "licenseUrl": "http://www.gnu.org/licenses/old-licenses/gpl-2.0.txt",
+    "changelogUrl": "CHANGELOG.md",
+    "license": "MIT",
+    "readMeUrl": "README.md",
+    "readMeEndUserUrl": "README_ENDUSER.md",
+    "main": "index.js",
+    "scripts": {
+        "start": "node index.js",
+        "test": "mocha"
+    },
+    "engines": {
+        "das-keyboard-q": "3.0.0"
+    },
+    "dependencies": {
+        "daskeyboard-applet": "^2.7.12",
+        "request": "^2.88.0"
+    },
+    "qConfig": {
+        "geometry": {
+            "width": 1,
+            "height": 1,
+            "defaults": {
+                "origin": {
+                    "x": 0,
+                    "y": 1
+                }
+            }
+        },
+        "questions": [
+            {
+                "key": "zoneId",
+                "label": "NWS Forecast Zone Id",
+                "placeholder": "AKZ222",
+                "required": false,
+                "order": 1,
+                "controlType": "textbox"
+            },
+            {
+                "key": "colorExtreme",
+                "label": "Extreme Alert Color",
+                "help": "Color to indicate Extreme Alert",
+                "required": true,
+                "order": 2,
+                "value": "#FF0000",
+                "controlType": "color"
+            },
+            {
+                "key": "colorSevere",
+                "label": "Severe Alert Color",
+                "help": "Color to indicate Severe Alert",
+                "required": true,
+                "order": 3,
+                "value": "#FFA500",
+                "controlType": "color"
+            },
+            {
+                "key": "colorModerate",
+                "label": "Moderate Alert Color",
+                "help": "Color to indicate Moderate Alert",
+                "required": true,
+                "order": 2,
+                "value": "#FFFF00",
+                "controlType": "color"
+            },
+            {
+                "key": "colorMinor",
+                "label": "Minor Alert Color",
+                "help": "Color to indicate Minor Alert",
+                "required": true,
+                "order": 2,
+                "value": "#0000FF",
+                "controlType": "color"
+            },
+            {
+                "key": "colorUnknown",
+                "label": "Unknown Alert Color",
+                "help": "Color to indicate Unknown Alert",
+                "required": true,
+                "order": 2,
+                "value": "#00FFFF",
+                "controlType": "color"
+            }
+          ],
+        "applet": {
+            "defaults": {}
+        }
+    }
+}
