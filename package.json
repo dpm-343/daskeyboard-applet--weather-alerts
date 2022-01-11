@@ -27,11 +27,10 @@
         "test": "mocha"
     },
     "engines": {
-        "das-keyboard-q": "3.0.0"
+        "das-keyboard-q": "3.2.4"
     },
     "dependencies": {
-        "daskeyboard-applet": "^2.7.12",
-        "request": "^2.88.0"
+        "daskeyboard-applet": "^2.11.1"
     },
     "qConfig": {
         "geometry": {
