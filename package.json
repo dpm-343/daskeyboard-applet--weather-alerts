@@ -46,11 +46,19 @@
         },
         "questions": [
             {
-                "key": "zoneId",
+                "key": "nws_zone_id",
                 "label": "NWS Forecast Zone Id",
                 "placeholder": "TXZ173",
-                "required": false,
+                "required": true,
                 "order": 1,
+                "controlType": "textbox"
+            },
+            {
+                "key": "sameId",
+                "label": "NWS SAME Code",
+                "placeholder": "",
+                "required": false,
+                "order": 2,
                 "controlType": "textbox"
             },
             {
@@ -58,7 +66,7 @@
                 "label": "Extreme Alert Color",
                 "help": "Color to indicate Extreme Alert",
                 "required": true,
-                "order": 2,
+                "order": 3,
                 "value": "#FF0000",
                 "controlType": "color"
             },
@@ -67,7 +75,7 @@
                 "label": "Severe Alert Color",
                 "help": "Color to indicate Severe Alert",
                 "required": true,
-                "order": 3,
+                "order": 4,
                 "value": "#FFA500",
                 "controlType": "color"
             },
@@ -76,7 +84,7 @@
                 "label": "Moderate Alert Color",
                 "help": "Color to indicate Moderate Alert",
                 "required": true,
-                "order": 2,
+                "order": 5,
                 "value": "#FFFF00",
                 "controlType": "color"
             },
@@ -85,7 +93,7 @@
                 "label": "Minor Alert Color",
                 "help": "Color to indicate Minor Alert",
                 "required": true,
-                "order": 2,
+                "order": 6,
                 "value": "#0000FF",
                 "controlType": "color"
             },
@@ -94,7 +102,7 @@
                 "label": "Unknown Alert Color",
                 "help": "Color to indicate Unknown Alert",
                 "required": true,
-                "order": 2,
+                "order": 7,
                 "value": "#00FFFF",
                 "controlType": "color"
             }

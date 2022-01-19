@@ -56,8 +56,10 @@ class WeatherAlerts extends q.DesktopApp {
         var maxSeverity = 'Unknown';
         var alertText = '';
         var alertHeadline = '';
-        const zoneId=this.config.zoneId;
-        //const zoneId = 'MIZ022';
+        const nws_zone_id=this.config.zoneId;
+        const nws_same_id=this.config.sameID;
+        //const zoneId = 'TXZ173';
+        //const nws_same_id='048491';
 
         const severityFormat = { 'Extreme': [this.config.colorExtreme, 'BLINK'],
                                 'Severe':   [this.config.colorSevere, 'SET_COLOR'],
@@ -65,33 +67,32 @@ class WeatherAlerts extends q.DesktopApp {
                                 'Minor':    [this.config.colorMinor, 'SET_COLOR'],
                                 'Unknown':  [this.config.colorUnknown, 'SET_COLOR'] };
 
-        // const severityFormat = { 'Extreme': "#FF0000",
-        //                          'Severe':   "#FFA500",
-        //                          'Moderate': "#00FF00",
-        //                          'Minor':    "#00FF00",
-        //                          'Unknown':  "#00FFFF" };
-
-        if (!zoneId) {
+        if (!nws_zone_id) {
             logger.info('No zoneId configured');
             return null;        
         } else {
-            logger.info("My zone ID is  : " + zoneId);
+            logger.info("My zone ID is  : " + nws_zone_id);
 
-            const alertjson = await this.downloadAlerts(zoneId);
+            const alertjson = await this.downloadAlerts(nws_zone_id);
             logger.info("Received Alert" + JSON.stringify(alertjson));
             try {
                 const features = alertjson.features;
                 logger.info("Parsing Response Length " + alertjson.features.length);
                 features.forEach(alert => {
                     logger.info('Alert: ' + alert.properties.id);
-                    maxSeverity = this.compareSeverity(maxSeverity, alert.properties.severity);
-                    alertText = alertText + "<div><b>" + alert.properties.headline + "</b></div>";
-                    alertText = alertText + "<div><b>Severity: " + alert.properties.severity + "</b><div>";
-                    alertText = alertText + "<div>" + alert.properties.description + "</div>";
-                    //alert.properties.instruction ? alertText = alertText + "<div>" + alert.properties.instruction + "</div>" : {};
+                    
+                    if (nws_same_id === "" || alert.properties.geocode.SAME.includes(nws_same_id)) {
+                        // Send signal if SAME id is blank or if SAME id is configured and matched in alert
+                        logger.info("Alerting matching SAME id: " + nws_same_id);
+                        maxSeverity = this.compareSeverity(maxSeverity, alert.properties.severity);
+                        alertText = alertText + "<div><b>" + alert.properties.headline + "</b></div>";
+                        alertText = alertText + "<div><b>Severity: " + alert.properties.severity + "</b><div>";
+                        alertText = alertText + "<div>" + alert.properties.description + "</div>";
+                        //alert.properties.instruction ? alertText = alertText + "<div>" + alert.properties.instruction + "</div>" : {};
 
-                    logger.debug(alertText, "\n\n");
-                    logger.info("MaxSeverity: " + maxSeverity);
+                        logger.debug(alertText, "\n\n");
+                        logger.info("MaxSeverity: " + maxSeverity);
+                    }
 
                 })
                 if(alertText) {
@@ -99,7 +100,7 @@ class WeatherAlerts extends q.DesktopApp {
                         points: [ [new q.Point(severityFormat[maxSeverity][0], severityFormat[maxSeverity][1])] ],
                         name: "NWS Alert",
                         message: alertText,
-                        isMuted: false
+                        isMuted: true
                     });
                     logger.info("Sending Signal: " + JSON.stringify(signal));
                     return signal;
