@@ -56,12 +56,12 @@ class WeatherAlerts extends q.DesktopApp {
         var maxSeverity = 'Unknown';
         var alertText = '';
         var alertHeadline = '';
-        //const zoneId=this.config.zoneId;
-        const zoneId = 'MIZ022';
+        const zoneId=this.config.zoneId;
+        //const zoneId = 'MIZ022';
 
         const severityFormat = { 'Extreme': [this.config.colorExtreme, 'BLINK'],
-                                'Severe':   [this.config.colorSevere, 'BLINK'],
-                                'Moderate': [this.config.colorModerate, 'BLINK'],
+                                'Severe':   [this.config.colorSevere, 'SET_COLOR'],
+                                'Moderate': [this.config.colorModerate, 'SET_COLOR'],
                                 'Minor':    [this.config.colorMinor, 'SET_COLOR'],
                                 'Unknown':  [this.config.colorUnknown, 'SET_COLOR'] };
 

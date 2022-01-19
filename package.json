@@ -30,7 +30,8 @@
         "das-keyboard-q": "3.2.4"
     },
     "dependencies": {
-        "daskeyboard-applet": "^2.11.1"
+        "daskeyboard-applet": "^2.11.1",
+        "yarn": "^1.22.17"
     },
     "qConfig": {
         "geometry": {
@@ -47,7 +48,7 @@
             {
                 "key": "zoneId",
                 "label": "NWS Forecast Zone Id",
-                "placeholder": "AKZ222",
+                "placeholder": "TXZ173",
                 "required": false,
                 "order": 1,
                 "controlType": "textbox"
@@ -97,7 +98,7 @@
                 "value": "#00FFFF",
                 "controlType": "color"
             }
-          ],
+        ],
         "applet": {
             "defaults": {}
         }
