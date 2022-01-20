@@ -54,9 +54,9 @@
                 "controlType": "textbox"
             },
             {
-                "key": "sameId",
+                "key": "nws_same_id",
                 "label": "NWS SAME Code",
-                "placeholder": "",
+                "placeholder": "048491",
                 "required": false,
                 "order": 2,
                 "controlType": "textbox"

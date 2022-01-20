@@ -11,6 +11,7 @@ class WeatherAlerts extends q.DesktopApp {
         // run every 15 min
         this.pollingInterval = 15 * 60 * 1000;
         logger.info("WeatherAlerts ready");
+        //logger.info("Origin is: " + this.getOriginX() + ", " + this.getOriginY())
     }
 
     async downloadAlerts(zone) {
@@ -47,19 +48,57 @@ class WeatherAlerts extends q.DesktopApp {
         }
     }
 
-    outputTest(){
-        return "Severe";
+    async getActiveSignals(x,y) {
+        const pid = 'Q_MATRIX'
+        const url = "http://localhost:27301/api/1.0/signals/pid/" + pid + "/zoneId/" + x + "," + y;
+
+        return request.get({
+            url: url,
+            json: true
+            }).then(body => {
+                return body;
+            }).catch((error) => {
+            logger.info('Error when trying to getCurrentAlerts', error);
+            throw new Error('Error when trying to getCurrentAlerts: ', error);
+            })
+    }
+
+    async clearSignal(signal_id) {
+        const pid = 'Q_MATRIX'
+        const url = "http://localhost:27301/api/1.0/signals/" + signal_id;
+        const headers = { 'User-Agent': 'request(q-applet-weather)', 'Content-Type': 'application/json' };
+
+        logger.info('Clearing Signal ' + signal_id)
+
+        return request.delete({
+            url: url,
+            headers: headers,
+            json: true
+            }).then(body => {
+                return body;
+            }).catch((error) => {
+            logger.info('Error when trying to clearSignal', error);
+            throw new Error('Error when trying to clearSignal: ', error);
+            })
+
     }
 
     async run() {
         logger.info("Weather Alerts running.");
-        var maxSeverity = 'Unknown';
-        var alertText = '';
-        var alertHeadline = '';
-        const nws_zone_id=this.config.zoneId;
-        const nws_same_id=this.config.sameID;
-        //const zoneId = 'TXZ173';
-        //const nws_same_id='048491';
+        var max_severity = 'Unknown';
+        var alert_text = '';
+        var alert_oids = [];
+        var active_signals;
+        var active_signal_id;
+        var active_alerts;
+
+        
+        //const nws_zone_id=this.config.nws_zone_id;
+        //const nws_same_id=this.config.nws_same_id;
+        const nws_zone_id = 'TXZ173';
+        const nws_same_id='948491';
+
+
 
         const severityFormat = { 'Extreme': [this.config.colorExtreme, 'BLINK'],
                                 'Severe':   [this.config.colorSevere, 'SET_COLOR'],
@@ -71,43 +110,65 @@ class WeatherAlerts extends q.DesktopApp {
             logger.info('No zoneId configured');
             return null;        
         } else {
+
+            try {
+                //(this.getOriginX(), this.getOriginY());
+                active_signals = await this.getActiveSignals(11, 0);
+                active_alerts = active_signals.message.match(/<label hidden>OID\:(.*)<\/label>/m);
+                active_signal_id = active_signals.id;
+                logger.info("Active Alerts: " + active_signals.id + " OID:" + active_alerts[1]);
+    
+            } catch(error) {
+                logger.error('Unable to retrieve active signals: ' + error);
+            }
+
             logger.info("My zone ID is  : " + nws_zone_id);
 
             const alertjson = await this.downloadAlerts(nws_zone_id);
-            logger.info("Received Alert" + JSON.stringify(alertjson));
+            //logger.info("Received Alert" + JSON.stringify(alertjson));
             try {
                 const features = alertjson.features;
                 logger.info("Parsing Response Length " + alertjson.features.length);
                 features.forEach(alert => {
                     logger.info('Alert: ' + alert.properties.id);
-                    
+
                     if (nws_same_id === "" || alert.properties.geocode.SAME.includes(nws_same_id)) {
                         // Send signal if SAME id is blank or if SAME id is configured and matched in alert
-                        logger.info("Alerting matching SAME id: " + nws_same_id);
-                        maxSeverity = this.compareSeverity(maxSeverity, alert.properties.severity);
-                        alertText = alertText + "<div><b>" + alert.properties.headline + "</b></div>";
-                        alertText = alertText + "<div><b>Severity: " + alert.properties.severity + "</b><div>";
-                        alertText = alertText + "<div>" + alert.properties.description + "</div>";
-                        //alert.properties.instruction ? alertText = alertText + "<div>" + alert.properties.instruction + "</div>" : {};
+                        logger.info("Alert matching SAME id: " + nws_same_id);
+                        max_severity = this.compareSeverity(max_severity, alert.properties.severity);
+                        alert_text = alert_text + "<div><b>" + alert.properties.headline + "</b></div>";
+                        alert_text = alert_text + "<div><b>Severity: " + alert.properties.severity + "</b><div>";
+                        alert_text = alert_text + "<div>" + alert.properties.description + "</div>";
 
-                        logger.debug(alertText, "\n\n");
-                        logger.info("MaxSeverity: " + maxSeverity);
+                        alert_oids.push(alert.properties.id);
+                        //alert.properties.instruction ? alert_text = alert_text + "<div>" + alert.properties.instruction + "</div>" : {};
+
+                        logger.info(alert_text, "\n\n");
+                        logger.info("max_severity: " + max_severity);
                     }
-
                 })
-                if(alertText) {
-                    const signal = new q.Signal({
-                        points: [ [new q.Point(severityFormat[maxSeverity][0], severityFormat[maxSeverity][1])] ],
-                        name: "NWS Alert",
-                        message: alertText,
-                        isMuted: true
-                    });
-                    logger.info("Sending Signal: " + JSON.stringify(signal));
-                    return signal;
-                } else { return null; }
+
             } catch (error) {
                 return q.Signal.error([`Unable to parse alert response: ${error}`]);
             }
+
+            if(alert_text !== '') {
+                alert_text = alert_text + "<label hidden>OID:" + alert_oids + "</label>";
+                const signal = new q.Signal({
+                    points: [ [new q.Point(severityFormat[max_severity][0], severityFormat[max_severity][1])] ],
+                    name: "NWS Alert",
+                    message: alert_text,
+                    isMuted: true
+                });
+                logger.info("Sending Signal: " + JSON.stringify(signal));
+
+                return signal;
+            } else { 
+                if(typeof active_signal_id !== 'undefined') {
+                    try { this.clearSignal(active_signal_id); }
+                    catch(error) { logger.info('Error Clearing Signal ' + active_signal_id + ' ' + error); }
+                }
+                return null; }
 
 
         }
