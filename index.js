@@ -54,13 +54,20 @@ class WeatherAlerts extends q.DesktopApp {
 
         return request.get({
             url: url,
-            json: true
+            json: true,
+            resolveWithFullResponse: true
             }).then(body => {
+                logger.info('Active Sigal response: ', body);
                 return body;
-            }).catch((error) => {
-            logger.info('Error when trying to getCurrentAlerts', error);
-            throw new Error('Error when trying to getCurrentAlerts: ', error);
+            }).catch((err) => {
+            if(err.message.search(/StatusCodeError\: 404/)){
+                logger.info('No Active Signals');
+                return null;
+            }
+            logger.error('Error when trying to getActiveSignals: ', err.message );
+            throw new Error('Error when trying to getActiveSignals: ', err);
             })
+
     }
 
     async clearSignal(signal_id) {
@@ -114,9 +121,11 @@ class WeatherAlerts extends q.DesktopApp {
             try {
                 //(this.getOriginX(), this.getOriginY());
                 active_signals = await this.getActiveSignals(11, 0);
-                active_alerts = active_signals.message.match(/<label hidden>OID\:(.*)<\/label>/m);
-                active_signal_id = active_signals.id;
-                logger.info("Active Alerts: " + active_signals.id + " OID:" + active_alerts[1]);
+                if (active_signals) {
+                    active_alerts = active_signals.message.match(/<label hidden>OID\:(.*)<\/label>/m);
+                    active_signal_id = active_signals.id;
+                    logger.info("Active Alerts: " + active_signals.id + " OID:" + active_alerts[1]);
+                }
     
             } catch(error) {
                 logger.error('Unable to retrieve active signals: ' + error);
@@ -181,3 +190,4 @@ module.exports = {
 }
 
 const weatherAlerts = new WeatherAlerts();
+weatherAlerts.run();
