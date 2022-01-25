@@ -100,10 +100,10 @@ class WeatherAlerts extends q.DesktopApp {
         var active_alerts;
 
         
-        //const nws_zone_id=this.config.nws_zone_id;
-        //const nws_same_id=this.config.nws_same_id;
-        const nws_zone_id = 'TXZ173';
-        const nws_same_id='948491';
+        const nws_zone_id=this.config.nws_zone_id;
+        const nws_same_id=this.config.nws_same_id;
+        //const nws_zone_id = 'TXZ173';
+        //const nws_same_id='948491';
 
 
 
@@ -120,7 +120,7 @@ class WeatherAlerts extends q.DesktopApp {
 
             try {
                 //(this.getOriginX(), this.getOriginY());
-                active_signals = await this.getActiveSignals(11, 0);
+                active_signals = await this.getActiveSignals(this.getOriginX(), this.getOriginY());
                 if (active_signals) {
                     active_alerts = active_signals.message.match(/<label hidden>OID\:(.*)<\/label>/m);
                     active_signal_id = active_signals.id;
@@ -190,4 +190,3 @@ module.exports = {
 }
 
 const weatherAlerts = new WeatherAlerts();
-weatherAlerts.run();
