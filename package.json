@@ -103,7 +103,7 @@
                 "help": "Color to indicate Unknown Alert",
                 "required": true,
                 "order": 7,
-                "value": "#00FFFF",
+                "value": "#DDDDDD",
                 "controlType": "color"
             }
         ],
