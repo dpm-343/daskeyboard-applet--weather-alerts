@@ -76,7 +76,7 @@
                 "help": "Color to indicate Severe Alert",
                 "required": true,
                 "order": 4,
-                "value": "#FFA500",
+                "value": "#FF00BB",
                 "controlType": "color"
             },
             {
@@ -85,7 +85,7 @@
                 "help": "Color to indicate Moderate Alert",
                 "required": true,
                 "order": 5,
-                "value": "#FFFF00",
+                "value": "#FFA500",
                 "controlType": "color"
             },
             {
