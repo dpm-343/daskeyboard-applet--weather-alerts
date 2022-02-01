@@ -76,7 +76,7 @@
                 "help": "Color to indicate Severe Alert",
                 "required": true,
                 "order": 4,
-                "value": "#FF00BB",
+                "value": "#FF0080",
                 "controlType": "color"
             },
             {
